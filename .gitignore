@@ -1,5 +1,29 @@
-
 # Copias de respaldo locales
 *.bak
 *.bak_*
 *.orig
+*~
+
+# Archivos del sistema operativo
+.DS_Store
+._*
+Thumbs.db
+desktop.ini
+
+# Editores
+.vscode/
+.idea/
+*.swp
+
+# Python y Jupyter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# Figuras generadas por los cuadernos (se regeneran al ejecutarlos)
+figuras/
+
+# Compilación de Arduino
+build/

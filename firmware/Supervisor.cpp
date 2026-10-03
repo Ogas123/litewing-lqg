@@ -11,20 +11,10 @@ int   THROTTLE_HOVER      = 1600;  // Empuje de sustentación [PWM]. Ajustar al 
 float AlturaObjetivoFinal = 0.50f; // [m]
 float baseThrottleDinamico = 0.0f;
 
-// --------------------------------------------------------------------
-// El LQR de altura es proporcional puro, sin acción integral, así que en
-// régimen permanente valen dos relaciones de las que sale todo lo de abajo:
-//
-//   Vz   = (adelanto de la referencia) / TAU_ALT      TAU_ALT = L_alt[1]/L_alt[0]
-//   e_ss = (sesgo de empuje) / L_alt[0]
-//
-// La primera: limitar cuánto se adelanta la referencia ES limitar la velocidad
-// vertical. Es el mecanismo de las dos rampas.
-// La segunda: si THROTTLE_HOVER no coincide con el empuje real, el dron queda
-// estacionado a una altura desplazada. Cerca del piso esa diferencia es grande
-// y variable, por eso ahí el lazo de altura se abandona en vez de insistir.
-// --------------------------------------------------------------------
-constexpr float MARGEN_SEGUIMIENTO = 0.05f; // [m] holgura sobre el retraso natural
+// Adelanto máximo de la referencia sobre la altura estimada. Limita la
+// velocidad de ascenso y descenso. Ajustados en vuelo.
+constexpr float ADELANTO_MAX       = 0.17f; // [m] ascenso y descenso
+constexpr float ADELANTO_MAX_FLARE = 0.10f; // [m] bajo ALTURA_FLARE
 
 // --- Despegue ---
 constexpr float RAMPA_DESPEGUE     = 15.0f; // [PWM/ciclo] rampa a lazo abierto
@@ -121,7 +111,7 @@ void ejecutarSupervisorVuelo() {
 
       } else {
         // Limitar el adelanto de la referencia limita la velocidad de ascenso.
-        if ((DesiredAltitude - x_hat_alt[0]) < (TAU_ALT * VEL_ASCENSO + MARGEN_SEGUIMIENTO)) {
+        if ((DesiredAltitude - x_hat_alt[0]) < ADELANTO_MAX) {
           DesiredAltitude += VEL_ASCENSO * h;
         }
         if (DesiredAltitude > AlturaObjetivoFinal) DesiredAltitude = AlturaObjetivoFinal;
@@ -153,9 +143,11 @@ void ejecutarSupervisorVuelo() {
     // ================================================================
     case ATERRIZANDO:
       if (!enCorte) {
-        float velDescenso = (x_hat_alt[0] > ALTURA_FLARE) ? VEL_DESCENSO : VEL_FLARE;
+        bool  flare       = (x_hat_alt[0] <= ALTURA_FLARE);
+        float velDescenso = flare ? VEL_FLARE : VEL_DESCENSO;
+        float adelanto    = flare ? ADELANTO_MAX_FLARE : ADELANTO_MAX;
 
-        if ((x_hat_alt[0] - DesiredAltitude) < (TAU_ALT * velDescenso + MARGEN_SEGUIMIENTO)) {
+        if ((x_hat_alt[0] - DesiredAltitude) < adelanto) {
           DesiredAltitude -= velDescenso * h;
         }
         if (DesiredAltitude < ALTURA_REF_MIN) DesiredAltitude = ALTURA_REF_MIN;

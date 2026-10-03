@@ -73,11 +73,13 @@ constexpr float Q_alt[2][2] = {
 };
 
 // Matrices de Covarianza de Ruido de Medición (R)
+// Medidas en Resultados.ipynb (seccion 3) con vuelo_final.csv: acelerometro con su
+// ruido en vuelo, giroscopos con su ruido en reposo (primeros 8 s, motores apagados). El ToF conserva 0.005 m^2 (muestra repetida).
 constexpr float R_roll_pitch[2][2] = {
-    {0.0200f, 0.0000f}, 
-    {0.0000f, 0.0010f}
+    {23.2f, 0.0f},
+    {0.0f, 0.0038f}
 };
-constexpr float R_yaw = 0.0010f;
+constexpr float R_yaw = 0.00302f;
 constexpr float R_alt_scalar = 0.0050f; // Ruido del sensor láser ToF VL53L1X
 
 
@@ -87,31 +89,26 @@ constexpr float R_alt_scalar = 0.0050f; // Ruido del sensor láser ToF VL53L1X
 
 // Ganancias de realimentación (L) precalculadas en estado estacionario (LQR Óptimo)
 // u(k) = -L0 * (pos - pos_ref) - L1 * vel
-// Todas son solucion exacta de la DARE sobre el modelo en unidades de firmware:
+// Todas son solucion exacta de la DARE sobre el modelo en unidades de firmware,
+// copiadas sin redondeo desde Resultados.ipynb (seccion 2):
 //   Roll/Pitch : Q = diag(100, 250),            R = 1     -> [4.2944, 6.8112]
 //   Yaw        : Q = 1200,                      R = 1     -> 29.9336
 //   Altura     : Q = diag(300, 10),            R = 1e-4  -> [1714.8206, 810.9143]
-constexpr float L_roll[2]  = {4.2944f, 6.8112f}; // L0 (Ángulo) y L1 (Velocidad Angular)
-constexpr float L_pitch[2] = {4.2944f, 6.8112f}; // Idéntico por simetría estructural
-constexpr float L_yaw[1]   = {29.9336f};         // Tasa de Guiñada r
-constexpr float L_alt[2]   = {1714.8206f, 810.9143f};
+constexpr float L_roll[2]  = {4.294439478445026f, 6.811173106141771f}; // L0 (Ángulo) y L1 (Velocidad Angular)
+constexpr float L_pitch[2] = {4.294439478445026f, 6.811173106141771f}; // Idéntico por simetría estructural
+constexpr float L_yaw[1]   = {29.933623245757556f}; // Tasa de Guiñada r
+constexpr float L_alt[2]   = {1714.8205745856515f, 810.9143170654572f};
 
 // Autoridad máxima del canal de altura, en cuentas PWM. Debe superar el empuje
 // extra que aporta el efecto suelo (~318 PWM medidos apoyado) o el dron no
 // puede completar el descenso.
 constexpr float U_ALT_MAX  = 450.0f;
 
-// Constante de tiempo del modo lento del canal de altura.
-// El LQR de altura es proporcional puro, sin acción integral, de modo que en
-// régimen la velocidad vertical vale  Vz = (adelanto de la referencia)/TAU_ALT.
-// De ahí salen tanto el límite de seguimiento del ascenso como el del descenso.
-constexpr float TAU_ALT    = L_alt[1] / L_alt[0]; // 0.4729 s
-
 // ==========================================================
 // TRIMS DE ACTITUD PARA ELIMINAR DERIVA LATERAL Y LONGITUDINAL
 // ==========================================================
-constexpr float TRIM_ROLL  = -3.0f; // [grados]
-constexpr float TRIM_PITCH = -5.0f;  // [grados]
+constexpr float TRIM_ROLL  = -0.7f; // [grados] deriva a la derecha (vuelos 25/09)
+constexpr float TRIM_PITCH = -1.0f;  // [grados] con -3 sostenia -3,8 de media y se iba adelante (25/09 16:36)
 
 // ==========================================================
 // 3. MATRICES INICIALES DE INCERTIDUMBRE (P0)
