@@ -33,8 +33,10 @@ Cada carpeta tiene su propio README con el detalle.
 
 ## Hardware
 
-La plataforma es la **LiteWing V2.5C**, un diseño abierto de J. Joseph (Semicon Media) publicado por Circuit Digest:
-<https://circuitdigest.com/wiki/litewing/>. La placa se fabricó a partir de ese proyecto KiCad sin modificar el circuito,
+La plataforma es la **LiteWing V2.5C**, un diseño abierto de J. Joseph (Semicon Media) publicado por Circuit Digest.
+El proyecto original, con los archivos de diseño del hardware y su firmware de fábrica, está en
+[Circuit-Digest/LiteWing](https://github.com/Circuit-Digest/LiteWing); la documentación, en
+<https://circuitdigest.com/wiki/litewing/>. La placa se fabricó a partir de ese proyecto sin modificar el circuito,
 por eso el hardware no forma parte de este repositorio. Componentes principales: ESP32-S3, IMU MPU6050, sensor de
 distancia láser VL53L1X, cuatro motores sin núcleo 720 y una batería LiPo de una celda.
 
@@ -71,5 +73,5 @@ Los enlaces del PIP apuntan a ese tag, de modo que cambios posteriores en `main`
 
 ## Licencia
 
-El código y los cuadernos se distribuyen bajo la licencia [MIT](LICENSE). El diseño del hardware LiteWing pertenece a
-sus autores y no está incluido en esta licencia.
+El código y los cuadernos se distribuyen bajo la licencia [MIT](LICENSE). El diseño del hardware
+[LiteWing](https://github.com/Circuit-Digest/LiteWing) pertenece a sus autores y no está incluido en esta licencia.
